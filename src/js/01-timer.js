@@ -23,7 +23,7 @@ const options = {
     timer.userSelectedDate = selectedDates[0];
     if (timer.userSelectedDate < Date.now()) {
       iziToast.show({
-        icon: 'fas fa-times-circle',
+        icon: 'material-icons',
         title: 'Please',
         message: 'choose a date in the future',
         color: 'red',
