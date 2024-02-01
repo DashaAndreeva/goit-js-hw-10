@@ -24,6 +24,7 @@ const options = {
     if (timer.userSelectedDate < Date.now()) {
       iziToast.show({
         icon: 'material-icons',
+        iconColor: 'red',
         title: 'Please',
         message: 'choose a date in the future',
         color: 'red',
