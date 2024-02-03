@@ -5,6 +5,8 @@ import iziToast from 'izitoast';
 import 'izitoast/dist/css/iziToast.min.css';
 import 'flatpickr/dist/flatpickr.min.css';
 
+import imgIcon from '../img/icon.png';
+
 const inputElem = document.querySelector('#datetime-picker');
 const buttonElem = document.querySelector('[data-start]');
 const daysElem = document.querySelector('[data-days]');
@@ -84,9 +86,8 @@ const options = {
       timer.userSelectedDate = selectedDate;
       if (selectedDate < Date.now()) {
         iziToast.show({
-          icon: 'material-icons',
-          title: 'Please',
-          message: 'choose a date in the future',
+          iconUrl: imgIcon,
+          message: 'Please choose a date in the future',
           color: 'red',
           position: 'topRight',
         });
