@@ -12,31 +12,6 @@ const hoursElem = document.querySelector('[data-hours]');
 const minutesElem = document.querySelector('[data-minutes]');
 const secondsElem = document.querySelector('[data-seconds]');
 
-buttonElem.addEventListener('click', () => {
-  if (!timer.isActive) {
-    if (timer.userSelectedDate && timer.userSelectedDate >= Date.now()) {
-      timer.start();
-      buttonElem.classList.add('active-button');
-      buttonElem.classList.remove('inactive-button');
-      inputElem.disabled = false;
-      buttonElem.disabled = true; // Деактивуємо кнопку "Старт"
-    } else {
-      iziToast.show({
-        icon: 'material-icons',
-        iconColor: 'red',
-        title: 'Please',
-        message: 'choose a date in the future',
-        color: 'red',
-        position: 'topRight',
-      });
-    }
-  } else {
-    timer.stop();
-    inputElem.disabled = true;
-    buttonElem.disabled = false; // Активуємо кнопку "Старт"
-  }
-});
-
 const timer = {
   intervalId: null,
   isActive: false,
@@ -60,17 +35,29 @@ const timer = {
       return;
     }
     const startTime = this.userSelectedDate;
+    const currentTime = Date.now();
+    this.differenceInTime = startTime - currentTime;
+
+    if (this.differenceInTime <= 0) {
+      this.differenceInTime = 0;
+      this.stop();
+      return;
+    }
+
     this.isActive = true;
     this.intervalId = setInterval(() => {
       const currentTime = Date.now();
       this.differenceInTime = startTime - currentTime;
-      const timeInTimer = this.convertMs(this.differenceInTime);
-      daysElem.textContent = this.padTime(timeInTimer.days);
-      hoursElem.textContent = this.padTime(timeInTimer.hours);
-      minutesElem.textContent = this.padTime(timeInTimer.minutes);
-      secondsElem.textContent = this.padTime(timeInTimer.seconds);
-
-      inputElem.disabled = true;
+      if (this.differenceInTime <= 0) {
+        this.stop();
+      } else {
+        const timeInTimer = this.convertMs(this.differenceInTime);
+        daysElem.textContent = this.padTime(timeInTimer.days);
+        hoursElem.textContent = this.padTime(timeInTimer.hours);
+        minutesElem.textContent = this.padTime(timeInTimer.minutes);
+        secondsElem.textContent = this.padTime(timeInTimer.seconds);
+        inputElem.disabled = true;
+      }
     }, 1000);
   },
 
@@ -98,37 +85,32 @@ const options = {
       if (selectedDate < Date.now()) {
         iziToast.show({
           icon: 'material-icons',
-          iconColor: 'red',
           title: 'Please',
           message: 'choose a date in the future',
           color: 'red',
           position: 'topRight',
         });
         buttonElem.classList.add('active-button');
-        buttonElem.classList.remove('inactive-button');
-        buttonElem.disabled = true; // Деактивуємо кнопку "Старт"
+        buttonElem.disabled = true;
       } else {
         buttonElem.classList.remove('active-button');
         buttonElem.classList.add('inactive-button');
-        buttonElem.disabled = false; // Активуємо кнопку "Старт"
+        buttonElem.disabled = false;
       }
     } else {
-      if (selectedDate < Date.now()) {
-        iziToast.show({
-          icon: 'material-icons',
-          iconColor: 'red',
-          title: 'Please',
-          message: 'choose a date in the future',
-          color: 'red',
-          position: 'topRight',
-        });
-      } else {
-        timer.stop();
-        timer.userSelectedDate = selectedDate;
-        inputElem.disabled = false;
-      }
+      timer.stop();
+      timer.userSelectedDate = selectedDate;
+      inputElem.disabled = false;
     }
   },
 };
+
+buttonElem.addEventListener('click', () => {
+  if (!timer.isActive && timer.userSelectedDate >= Date.now()) {
+    timer.start();
+    buttonElem.classList.add('active-button');
+    buttonElem.classList.remove('inactive-button');
+  }
+});
 
 flatpickr(inputElem, options);
