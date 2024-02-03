@@ -114,4 +114,8 @@ buttonElem.addEventListener('click', () => {
   }
 });
 
-flatpickr(inputElem, options);
+try {
+  flatpickr(inputElem, options);
+} catch (error) {
+  console.error('Error initializing flatpickr:', error);
+}
