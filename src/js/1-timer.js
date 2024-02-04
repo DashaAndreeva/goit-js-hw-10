@@ -14,7 +14,7 @@ const hoursElem = document.querySelector('[data-hours]');
 const minutesElem = document.querySelector('[data-minutes]');
 const secondsElem = document.querySelector('[data-seconds]');
 
-const timer = {
+let timer = {
   intervalId: null,
   isActive: false,
   differenceInTime: 0,
@@ -58,16 +58,22 @@ const timer = {
         hoursElem.textContent = this.padTime(timeInTimer.hours);
         minutesElem.textContent = this.padTime(timeInTimer.minutes);
         secondsElem.textContent = this.padTime(timeInTimer.seconds);
-        inputElem.disabled = true;
       }
     }, 1000);
   },
 
   stop() {
-    if (this.differenceInTime <= 0) {
-      clearInterval(this.intervalId);
-      this.isActive = false;
-    }
+    clearInterval(this.intervalId);
+    this.isActive = false;
+  },
+
+  reset() {
+    clearInterval(this.intervalId);
+    this.isActive = false;
+    daysElem.textContent = '00';
+    hoursElem.textContent = '00';
+    minutesElem.textContent = '00';
+    secondsElem.textContent = '00';
   },
 
   padTime(value) {
@@ -99,9 +105,9 @@ const options = {
         buttonElem.disabled = false;
       }
     } else {
-      timer.stop();
+      timer.reset();
       timer.userSelectedDate = selectedDate;
-      inputElem.disabled = false;
+      timer.start();
     }
   },
 };
@@ -117,5 +123,12 @@ buttonElem.addEventListener('click', () => {
 try {
   flatpickr(inputElem, options);
 } catch (error) {
-  console.error('Error initializing flatpickr:', error);
+  const errorMessage =
+    'An error occurred while initializing the date picker. Please try again later.';
+  console.error(errorMessage, error);
+  iziToast.error({
+    title: 'Error',
+    message: errorMessage,
+    position: 'topRight',
+  });
 }
